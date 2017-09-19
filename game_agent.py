@@ -325,8 +325,81 @@ class AlphaBetaPlayer(IsolationPlayer):
         """
         self.time_left = time_left
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        best_move = (-1, -1)
+
+        try:
+            # The try/except block will automatically catch the exception
+            # raised when the timer is about to expire.
+            return self.alphabeta(game, self.search_depth)
+
+        except SearchTimeout:
+            pass  # Handle any actions required after timeout as needed
+
+        # Return the best move from the last completed search iteration
+        return best_move
+
+    def terminal_test(self, game):
+        """ 
+        Return True if the game is over for the active player
+        and False otherwise.
+
+        Parameters
+        ----------
+        game: isolation.Board
+            An instance of the Isolation game `Board` class representing the
+            current game state
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+            
+        return not bool(game.get_legal_moves())
+
+    def min_value(self, game, a, b):
+        """ 
+        Return the value for a win (+1) if the game is over,
+        otherwise return the minimum value over all legal child nodes.
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+
+        if(self.terminal_test(game)):
+            return 1
+
+        # Get all possible moves
+        moves = game.get_legal_moves()
+        v = float("inf")
+
+        for move in moves:
+            testGame = game.forecast_move(move)
+            v = min(v, self.max_value(testGame, a, b))
+            if v <= a:
+                return v
+            b = min(b, v)
+        return v
+
+
+    def max_value(self, game, a, b):
+        """ Return the value for a loss (-1) if the game is over,
+        otherwise return the maximum value over all legal child
+        nodes.
+        """
+        if self.time_left() < self.TIMER_THRESHOLD:
+            raise SearchTimeout()
+
+        if(self.terminal_test(game)):
+            return -1
+
+        v = float("-inf")
+        moves = game.get_legal_moves()
+
+        for move in moves:
+            testGame = game.forecast_move(move)
+            v = max(v, self.min_value(testGame, a, b))
+            if v >= b:
+                return v
+            a = max(a, v)
+
+        return v
 
     def alphabeta(self, game, depth, alpha=float("-inf"), beta=float("inf")):
         """Implement depth-limited minimax search with alpha-beta pruning as
@@ -376,5 +449,16 @@ class AlphaBetaPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        # TODO: finish this function!
-        raise NotImplementedError
+        moves = game.get_legal_moves()
+        best_score = self.max_value(game, alpha, beta)
+        best_move = (-1, -1)
+        current_depth = 1
+
+        for move in moves:
+            if(current_depth > depth):
+                break
+
+            if best_score == self.max_value(game.forecast_move(move), alpha, beta):
+                return move
+
+        return best_move
