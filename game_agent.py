@@ -186,16 +186,18 @@ class MinimaxPlayer(IsolationPlayer):
             
         return not bool(game.get_legal_moves())
 
-    def min_value(self, game):
+    def min_value(self, game, depth):
         """ 
         Return the value for a win (+1) if the game is over,
         otherwise return the minimum value over all legal child nodes.
         """
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
+        
+        depth +=1
 
-        if(self.terminal_test(game)):
-            return 1
+        if depth >= self.search_depth or self.terminal_test(game):
+            return self.score(game, self)
 
         # Get all possible moves
         moves = game.get_legal_moves()
@@ -203,12 +205,12 @@ class MinimaxPlayer(IsolationPlayer):
 
         for move in moves:
             testGame = game.forecast_move(move)
-            v = min(v, self.max_value(testGame))
+            v = min(v, self.max_value(testGame, depth))
 
         return v
 
 
-    def max_value(self, game):
+    def max_value(self, game, depth):
         """ Return the value for a loss (-1) if the game is over,
         otherwise return the maximum value over all legal child
         nodes.
@@ -216,15 +218,17 @@ class MinimaxPlayer(IsolationPlayer):
         if self.time_left() < self.TIMER_THRESHOLD:
             raise SearchTimeout()
 
-        if(self.terminal_test(game)):
-            return -1
+        depth +=1
+
+        if depth >= self.search_depth or self.terminal_test(game):
+            return self.score(game, self)
 
         v = float("-inf")
         moves = game.get_legal_moves()
 
         for move in moves:
             testGame = game.forecast_move(move)
-            v = max(v, self.min_value(testGame))
+            v = max(v, self.min_value(testGame, depth))
 
         return v
 
@@ -273,17 +277,13 @@ class MinimaxPlayer(IsolationPlayer):
         moves = game.get_legal_moves()
         best_score = float("-inf")
         best_move = (-1, -1)
-        current_depth = 1
-
+        depth_count = 0
+        
         for move in moves:
-            if(current_depth > depth):
-                break
-
-            v = self.min_value(game.forecast_move(move))
+            v = self.min_value(game.forecast_move(move), depth_count)
             if v > best_score:
                 best_move = move
                 best_score = v
-            current_depth = current_depth + 1
 
         return best_move
 
