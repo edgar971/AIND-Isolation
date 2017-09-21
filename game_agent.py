@@ -403,7 +403,7 @@ class AlphaBetaPlayer(IsolationPlayer):
 
         for move in moves:
             testGame = game.forecast_move(move)
-            v = max(v, self.min_value(testGame, depth-1, a, b))
+            v = max(v, self.min_value(testGame, depth - 1, a, b))
             if v >= b:
                 return v
             a = max(a, v)
@@ -459,13 +459,17 @@ class AlphaBetaPlayer(IsolationPlayer):
             raise SearchTimeout()
 
         moves = game.get_legal_moves()
-        best_score = alpha
+        best_score = float("-inf")
         best_move = (-1, -1)
 
         for move in moves:
-            alpha = self.min_value(game.forecast_move(move), depth - 1, alpha, beta)
-            if alpha >= best_score:
-                best_score = alpha
-                best_move = move
+            v = self.min_value(game.forecast_move(move), depth - 1, alpha, beta)
+            
+            if v >= best_score:
+                alpha = max(alpha,v)
+
+            if v > best_score:
+                best_score = v
+                best_move = move    
                 
         return best_move
