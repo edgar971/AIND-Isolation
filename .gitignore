@@ -11,6 +11,7 @@ __pycache__/
 *.so
 isolation-result-*
 isolation-*.zip
+isolation-pvp*
 # Distribution / packaging
 .Python
 env/

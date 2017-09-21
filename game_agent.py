@@ -34,8 +34,16 @@ def custom_score(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    a = float(len(game.get_legal_moves(player)))
+    b = float(len(game.get_legal_moves(game.get_opponent(player))))
+    
+    return a - b
 
 
 def custom_score_2(game, player):
@@ -60,8 +68,19 @@ def custom_score_2(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    a = len(game.get_legal_moves(player))
+    b = len(game.get_legal_moves(game.get_opponent(player)))
+
+    if a > b:
+        return float(1)
+    else:
+        return float(0)
 
 
 def custom_score_3(game, player):
@@ -86,8 +105,16 @@ def custom_score_3(game, player):
     float
         The heuristic value of the current game state to the specified player.
     """
-    # TODO: finish this function!
-    raise NotImplementedError
+    if game.is_loser(player):
+        return float("-inf")
+
+    if game.is_winner(player):
+        return float("inf")
+
+    a = len(game.get_legal_moves(player))
+    b = len(game.get_legal_moves(game.get_opponent(player)))
+
+    return float(a * b)
 
 
 class IsolationPlayer:
