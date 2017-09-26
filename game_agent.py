@@ -3,12 +3,12 @@ test your agent's strength against a set of known agents using tournament.py
 and include the results in your report.
 """
 import random
+import math
 
 
 class SearchTimeout(Exception):
     """Subclass base exception for code clarity. """
     pass
-
 
 def custom_score(game, player):
     """Calculate the heuristic value of a game state from the point of view
@@ -113,9 +113,43 @@ def custom_score_3(game, player):
 
     a = len(game.get_legal_moves(player))
     b = len(game.get_legal_moves(game.get_opponent(player)))
+    b = b if b != 0 else 1
 
-    return float(a * b)
+    return float(a / b)
 
+def best_guess(game):
+    available_moves = game.get_legal_moves()
+
+def get_center_location(game):
+    """Calculates the center position of the board.
+    
+    Parameters
+    ----------
+    game : `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
+
+    Returns
+    -------
+    (int, int)
+        Board coordinates corresponding to the center.
+    """
+    w, h = math.ceil(game.width / 2), math.ceil(game.height / 2)
+    return (w, h)
+
+def best_simple_move_guess(game, fallback=None):
+
+    # center_move = get_center_location(game)
+    available_moves = game.get_legal_moves()
+
+    if(len(available_moves) > 0):
+        best_move = available_moves[0]
+    elif fallback != None:
+        best_move = fallback
+    else:
+        best_move = (-1,-1)
+        
+    return best_move
 
 class IsolationPlayer:
     """Base class for minimax and alphabeta agents -- this class is never
@@ -184,15 +218,25 @@ class MinimaxPlayer(IsolationPlayer):
 
         # Initialize the best move so that this function returns something
         # in case the search fails due to timeout
-        best_move = (-1, -1)
-
+        best_move = (-1,-1)
+        # center_move = get_center_location(game)
+        
+        # # Check if center is available and this is move 1
+        # if(center_move in game.get_legal_moves()):
+        #     return center_move
+    
         try:
             # The try/except block will automatically catch the exception
             # raised when the timer is about to expire.
-            return self.minimax(game, self.search_depth)
+            
+            best_move = self.minimax(game, self.search_depth)
 
         except SearchTimeout:
             pass  # Handle any actions required after timeout as needed
+
+        # We want to make sure we don't end the game if there are available moves 
+        if(best_move == (-1,-1) and len(game.get_legal_moves()) > 0):
+            best_move = best_simple_move_guess(game)
 
         # Return the best move from the last completed search iteration
         return best_move
@@ -351,8 +395,12 @@ class AlphaBetaPlayer(IsolationPlayer):
             (-1, -1) if there are no available legal moves.
         """
         self.time_left = time_left
-
         best_move = (-1, -1)
+        # center_move = get_center_location(game)
+        
+        # # Check if center is available and this is move 1
+        # if(center_move in game.get_legal_moves()):
+        #     return center_move
 
         try:
             # The try/except block will automatically catch the exception
