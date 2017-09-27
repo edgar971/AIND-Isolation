@@ -41,10 +41,12 @@ def custom_score(game, player):
     if game.is_winner(player):
         return float("inf")
 
-    a = float(len(game.get_legal_moves(player)))
-    b = float(len(game.get_legal_moves(game.get_opponent(player))))
-    
-    return a - b
+    a = float(len(game.get_legal_moves(player))) + 1
+    b = float(len(game.get_legal_moves(game.get_opponent(player)))) + 1
+    spaces = len(game.get_blank_spaces())
+    spaces = spaces if spaces != 0 else 1
+
+    return float((a / b) / spaces) ** 2
 
 
 def custom_score_2(game, player):
