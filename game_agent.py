@@ -14,7 +14,8 @@ def custom_score(game, player):
     """Calculate the heuristic value of a game state from the point of view
     of the given player.
 
-    This should be the best heuristic function for your project submission.
+    This heuristic function returns the difference between the number of legal moves available
+    of the player and the opponent
 
     Note: this function should be called from within a Player instance as
     `self.score()` -- you should not need to call this function directly.
@@ -48,7 +49,8 @@ def custom_score(game, player):
 
 def custom_score_2(game, player):
     """Calculate the heuristic value of a game state from the point of view
-    of the given player.
+    of the given player. This heuristic function returns 1 if the player has higher
+    number of moves than the opponent.
 
     Note: this function should be called from within a Player instance as
     `self.score()` -- you should not need to call this function directly.
@@ -85,7 +87,8 @@ def custom_score_2(game, player):
 
 def custom_score_3(game, player):
     """Calculate the heuristic value of a game state from the point of view
-    of the given player.
+    of the given player. The value is calculated by dividing the number of moves
+    available of the player and opponent.
 
     Note: this function should be called from within a Player instance as
     `self.score()` -- you should not need to call this function directly.
@@ -138,6 +141,17 @@ def get_center_location(game):
     return (w, h)
 
 def best_simple_move_guess(game, fallback=None):
+    """Returns a move by simply using a list of available best moves
+
+    :param game: `isolation.Board`
+        An instance of `isolation.Board` encoding the current state of the
+        game (e.g., player locations and blocked cells).
+
+    :param fallback:
+    The value used if no move is available.
+    :return: (int, int)
+    Board coordinates corresponding to a legal move;
+    """
 
     # center_move = get_center_location(game)
     available_moves = game.get_legal_moves()
